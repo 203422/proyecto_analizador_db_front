@@ -1,0 +1,53 @@
+:root {
+    --primary: #3D737F;
+    --secondary: #202D32;
+    --tertiary: #648F99;
+    --background: #07161B;
+    --gray: #cccccc;
+    --container: #202D32;
+    --intense: #2CD3E1;
+    --property: #00DFA2;
+    --value: #98EECC;
+    --white: #ffffff;
+    --black: #303030;
+    --font: 'Poppins', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    font-size: 62.5%;
+}
+
+p {
+    color: var(--white);
+}
+
+body {
+    background-color: var(--background);
+    margin: 0;
+    font-family: var(--font);
+    font-size: 1.6rem;
+}
+
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 120rem;
+    width: 90%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+}
+
+tr {
+    color: var(--white);
+}
