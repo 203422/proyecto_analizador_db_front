@@ -35,8 +35,6 @@ const Login = () => {
 
             } else {
                 const json = await response.json();
-                // toast.error(json.message);
-
             }
 
         } catch (error) {

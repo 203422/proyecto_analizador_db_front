@@ -11,6 +11,7 @@ const Menu = () => {
     const [result, setResult] = useState('');
     const [tokens, setTokens] = useState([]);
     const [tokensCount, setTokensCount] = useState({})
+    const [resultDocs, setResultDocs] = useState([])
 
     const handleTextareaChange = (e) => {
         const value = e.target.value;
@@ -135,20 +136,33 @@ const Menu = () => {
 
             if (response.ok) {
                 const json = await response.json();
-                setResult(json.message)
+                if (typeMethod == 'get' && Array.isArray(json.message)) {
+                    setResultDocs(json.message)
+                    if (json.message.length === 0) {
+                        setResult(json.message)
+                    } else {
+                        setResult("")
+                    }
+                } else {
+                    setResult(json.message)
+                }
                 setTokens(json.tokens)
                 setTokensCount(json.tokens_count)
+                console.log(tokens)
+                console.log(tokensCount)
+
             } else {
                 const json = await response.json();
                 setResult(json.message)
+                setResultDocs([])
                 setTokens(json.tokens)
                 setTokensCount(json.tokens_count)
             }
 
         } catch (error) {
+            setResultDocs([])
             console.log('Error: ', error);
         }
-
     }
 
     return (
@@ -176,9 +190,10 @@ const Menu = () => {
                     >
                         Crear Colección
                     </button>
+
                     <button
                         className='button_function'
-                        onClick={() => handleButtonClick('INSERT INTO DATABASE nombre_db COLLECTION nombre_colección {"Ejemplo": "ejemplo"}', 'Insertar Documento', 'create', 'document')}
+                        onClick={() => handleButtonClick('INSERT {"Ejemplo": "ejemplo"} INTO DATABASE nombre_db COLLECTION nombre_colección ', 'Insertar Documento', 'create', 'document')}
                     >
                         Insertar Documento
                     </button>
@@ -190,13 +205,13 @@ const Menu = () => {
                     </button>
                     <button
                         className='button_function'
-                        onClick={() => handleButtonClick('UPDATE DATABASE nombre_db COLLECTION nombre_colección SET {"Ejemplo": "ejemplo"} WHERE {"Ejemplo": "ejemplo"}', 'Actualizar Documento', 'update', 'document')}
+                        onClick={() => handleButtonClick('UPDATE {"Ejemplo": "ejemplo"} WHERE {"Ejemplo": "ejemplo"} INTO DATABASE nombre_db COLLECTION nombre_colección ', 'Actualizar Documento', 'update', 'document')}
                     >
                         Actualizar Documento
                     </button>
                     <button
                         className='button_function'
-                        onClick={() => handleButtonClick('DELETE FROM DATABASE nombre_db COLLECTION nombre_colección WHERE {"Ejemplo": "Ejemplo"}', 'Eliminar Documento', 'delete', 'document')}
+                        onClick={() => handleButtonClick('DELETE {"Ejemplo": "Ejemplo"} FROM DATABASE nombre_db COLLECTION nombre_colección', 'Eliminar Documento', 'delete', 'document')}
                     >
                         Eliminar Documento
                     </button>
@@ -213,6 +228,25 @@ const Menu = () => {
             </div>
 
             <div className="container_results">
+
+                <div className="container_sintactic">
+                    <p className='highlight-db'>Resultado</p>
+                    <p>{result}</p>
+                    {resultDocs.length > 0 && (
+                        <ul>
+                            {resultDocs.map((doc, index) => (
+                                <li key={index}>
+                                    {Object.entries(doc).map(([key, value]) => (
+                                        <span key={key} className="highlight-property">
+                                            "{key}": <span className="highlight-value">"{value}"</span>
+                                        </span>
+                                    ))}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
                 <div className="container_lexical">
                     <p className='highlight-db'>Análisis Léxico</p>
 
@@ -223,19 +257,30 @@ const Menu = () => {
                                 <th>Tokens</th>
                                 <th>PR</th>
                                 <th>ID</th>
-                                <th>Números</th>
                                 <th>Símbolos</th>
+                                <th>Números</th>
+                                <th>Cadenas</th>
+                                <th>Boleanos</th>
+                                <th>Nulo</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             {tokens.map((token, index) => (
                                 <tr key={index}>
-                                    <td>{token.value}</td>
+                                    <td>
+                                        {token.value === true ? 'true' :
+                                            token.value === false ? 'false' :
+                                                token.value === null ? 'null' :
+                                                    token.value}
+                                    </td>
                                     <td>{token.type === 'CREATE' || token.type === 'DATABASE' || token.type === 'WITH' || token.type === 'COLLECTION' || token.type === 'INSERT' || token.type === 'INTO' || token.type === 'GET' || token.type === 'DOCUMENTS' || token.type === 'FROM' || token.type === 'UPDATE' || token.type === 'SET' || token.type === 'WHERE' || token.type === 'DELETE' ? 'x' : ''}</td>
                                     <td>{token.type === 'IDENTIFIER' ? 'x' : ''}</td>
-                                    <td>{token.type === 'NUMERIC' ? 'x' : ''}</td>
-                                    <td>{token.type === 'SYMBOL' ? 'x' : ''}</td>
+                                    <td>{token.type === 'LBRACE' || token.type === 'RBRACE' || token.type === 'COLON' || token.type === 'COMMA' ? 'x' : ''}</td>
+                                    <td>{token.type === 'NUMBER' ? 'x' : ''}</td>
+                                    <td>{token.type === 'STRING' ? 'x' : ''}</td>
+                                    <td>{token.type === 'TRUE' || token.type == 'FALSE' ? 'x' : ''}</td>
+                                    <td>{token.type === 'NULL' ? 'x' : ''}</td>
                                 </tr>
                             ))}
 
@@ -243,16 +288,15 @@ const Menu = () => {
                                 <td><strong>Total</strong></td>
                                 <td>{tokensCount.PR}</td>
                                 <td>{tokensCount.ID}</td>
-                                <td>{tokensCount.NUMBER}</td>
                                 <td>{tokensCount.SYM}</td>
+                                <td>{tokensCount.NUMBER}</td>
+                                <td>{tokensCount.STRING}</td>
+                                <td>{tokensCount.BOOL}</td>
+                                <td>{tokensCount.NULL}</td>
                             </tr>
                         </tbody>
                     </table>
 
-                </div>
-                <div className="container_sintactic">
-                    <p className='highlight-db'>Resultado</p>
-                    <p>{result}</p>
                 </div>
             </div>
         </div>

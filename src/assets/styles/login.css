@@ -17,7 +17,7 @@
 
 .input {
     padding: 2rem;
-    border: solid 1px var(--grayIntense);
+    border: solid 1px var(--gray);
     border-radius: 1rem;
     font-family: var(--font);
     background-color: transparent;

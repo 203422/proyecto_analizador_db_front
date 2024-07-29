@@ -51,6 +51,7 @@ textarea {
     font-weight: bold;
 }
 
+
 .button_function {
     font-family: var(--font);
     background-color: var(--tertiary);
@@ -89,6 +90,7 @@ table {
     overflow: hidden;
     border: 1px solid #ddd;
     font-size: 1.4rem;
+    
 }
 
 thead {
@@ -100,7 +102,6 @@ th {
     padding: 1.5rem;
     border: 1px solid #ddd;
     text-align: left;
-    
 }
 
 tbody tr {
@@ -109,7 +110,7 @@ tbody tr {
 
 td {
     padding: 1.5rem;
-    border: 1px solid #ddd; /* Borde de 1px en las celdas */
+    border: 1px solid #ddd; 
 }
 
 tbody tr:last-child {
